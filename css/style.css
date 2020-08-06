@@ -1,0 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    padding-bottom: 100px;
+}
+
+button {
+    cursor: pointer;
+}
+
+nav {
+    margin-bottom: 50px;
+}
+
+.nav-wrapper {
+    background: #00796b;
+
+    padding-left: 33%;
+    margin-bottom: 50px;
+}
+
+.remove-word {
+    background: transparent;
+    outline: none;
+    border: none;
+}
