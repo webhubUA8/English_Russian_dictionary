@@ -5,6 +5,7 @@ const russianWord = document.querySelector('.russian-word');
 const allWords = {};
 
 const allBtnRemove = document.querySelectorAll('.remove-word');
+const removeAllBtn = document.querySelector('.remove-all');
 
 // const table = document.createElement('table');
 // const thead = document.createElement('thead');
@@ -14,43 +15,51 @@ const tableThName = ['Английское слово', 'Русское слов
 
 form.addEventListener('submit', addWord);
 
+// Вызов функции очистки localStorage
+removeAllBtn.addEventListener('click', removeAll);
+
+// Записываем новые данные в localSorage и обновление таблицы
 function addWord(e) {
     e.preventDefault();
-
+    
+    console.log('helllo');
     if (englishWord.value === '' || russianWord.value === '') {
         alert('Заполните все поля!');
         return;
     }
     const englishWordValue = englishWord.value;
     const russianWordValue = russianWord.value;
+    // console.log(englishWordValue, russianWordValue);
     // const oneWord = [englishWordValue, russianWordValue];
     allWords[englishWordValue] = [englishWordValue, russianWordValue];
+    // localStorage.setItem('allwords', JSON.stringify(allWords));
     console.log(allWords);
-    const locStor = JSON.parse(localStorage.getItem('allwords'));
+    let locStor = readLocalStorage();
+    // let locStor = JSON.parse(localStorage.getItem('allwords'));
     if (!locStor) {
-        return;
+        localStorage.setItem('allwords', JSON.stringify(allWords));
+        locStor = readLocalStorage();
     }
+    console.log(locStor);
     locStor[englishWordValue] = [englishWordValue, russianWordValue];
     console.log(locStor);
     localStorage.setItem('allwords', JSON.stringify(locStor));
-
+    console.log(readLocalStorage());
     renderTable();
     englishWord.value = '';
     russianWord.value = '';
-
-    
+    loadDoc();
 }
 
-
+// Создание объекта с данных localStorage
 function readLocalStorage() {
     const locStor = JSON.parse(localStorage.getItem('allwords'));
-
-    console.log(locStor);
     return locStor;
 }
 
 loadDoc();
 
+// Создание заголовка "Список пуст"
 function emprtySpisok() {
     const div = document.createElement('div');
     const h2 = document.createElement('h2');
@@ -60,16 +69,23 @@ function emprtySpisok() {
     tableBox.appendChild(div);
 }
 
-console.log(localStorage.length);
-
+// Проверка localSorage на пустоту и вывод заголовка"Список пуст" или таблицы
 function loadDoc() {
-    if (!localStorage.length) {
+    let locStor = readLocalStorage();
+    // console.log(locStor);
+    // if (!localStorage.length) {
+    // console.log(Object.keys(locStor));
+    // console.log(Object.keys(locStor).length);
+    if (locStor === null || Object.keys(locStor).length == 0) {
+        tableBox.innerHTML = '';
+        console.log(!localStorage.length);
         emprtySpisok();
         return;
     }
     renderTable();
 }
 
+// Создание таблицы
 function renderTable() {
     tableBox.innerHTML = '';
     const table = document.createElement('table');
@@ -83,6 +99,7 @@ function renderTable() {
     tableBox.appendChild(table);
 }
 
+// Создание шапки таблицы
 function renderThead(arr) {
     const thead = document.createElement('thead');
     const tr = document.createElement('tr');
@@ -100,6 +117,7 @@ function renderThead(arr) {
     return thead;
 }
 
+// Создание тела таблицы
 function renderTbody(arr) {
     const tbody = document.createElement('tbody');
 
@@ -110,27 +128,22 @@ function renderTbody(arr) {
             td.textContent = line;
             td.style.fontWeight = 'bold';
             td.style.color = '#616161 ';
-            console.log(line);
             tr.appendChild(td);
         })
         const td = document.createElement('td');
         const btn = createBtnRemove();
-        // let img = document.querySelector('.img-remove');
         let img = btn.children[0];
         
         img.setAttribute('data-btn-remove', key);
-        console.log(img);
         td.appendChild(btn);
         tr.appendChild(td);
 
         tbody.appendChild(tr);
-        console.log(tbody);
     }
-    // console.log(oneLine);
-
     return tbody;
 }
 
+// Создание кнопки удаление слова
 function createBtnRemove() {
     const btn = document.createElement('button');
     btn.classList.add('remove-word');
@@ -139,14 +152,43 @@ function createBtnRemove() {
     return btn;
 }
 
-function removeLineWord() {
+// Удаление одного слова
+function removeLineWord(data) {
+    const store = readLocalStorage();
+    
+    for (let key in store) {
+        if (key == data) {
+            delete store[data];
+            localStorage.setItem('allwords', JSON.stringify(store));
+            console.log(Object.keys(store).length);
+            if (Object.keys(store).length == 0) {
+                loadDoc();
+            }
+            // renderTable();
+        }
+    }
     
 }
 
+// Вызов функции удаление слова
 tableBox.addEventListener('click', (e) => {
-    console.log(e.target);
     if (e.target.classList.contains('img-remove')) {
         const dataAtr = e.target.getAttribute('data-btn-remove');
-        console.log(dataAtr);
+        removeLineWord(dataAtr);
+        loadDoc();
     }
 })
+
+// Очистка localStorage
+function removeAll() {
+    let locStor = readLocalStorage();
+    if (locStor === null || Object.keys(locStor).length == 0) {
+        alert('Нет объетов для удаления. Добавьте слова в список!');
+        return;
+    }
+    if (!confirm("Вы действительно хотите удалить Фсё???")) return;
+    localStorage.clear();
+    console.log(!localStorage.length);
+    loadDoc();
+    // renderTable();
+}

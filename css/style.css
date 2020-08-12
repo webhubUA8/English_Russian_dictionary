@@ -28,3 +28,11 @@ nav {
     outline: none;
     border: none;
 }
+
+.table-box {
+    margin-bottom: 50px;
+}
+
+.remove-all {
+    margin-left: 10px;
+}
