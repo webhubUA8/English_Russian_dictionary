@@ -7,10 +7,6 @@ const allWords = {};
 const allBtnRemove = document.querySelectorAll('.remove-word');
 const removeAllBtn = document.querySelector('.remove-all');
 
-// const table = document.createElement('table');
-// const thead = document.createElement('thead');
-// const tbody = document.createElement('tbody');
-
 const tableThName = ['Английское слово', 'Русское слово', ''];
 
 form.addEventListener('submit', addWord);
@@ -138,7 +134,8 @@ function renderTbody(arr) {
         td.appendChild(btn);
         tr.appendChild(td);
 
-        tbody.appendChild(tr);
+        // tbody.appendChild(tr);
+        tbody.insertAdjacentElement('afterbegin', tr);
     }
     return tbody;
 }
